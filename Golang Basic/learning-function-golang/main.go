@@ -66,6 +66,10 @@ func main() {
 
 	fmt.Println(factorialLoop(10))
 	fmt.Println(factorialRecursive(10))
+
+	fmt.Println("===================")
+
+	closure()
 }
 
 func sayHello() {
@@ -151,4 +155,19 @@ func factorialRecursive(value int) int {
 	} else {
 		return value * factorialRecursive(value-1)
 	}
+}
+
+func closure() {
+	counter := 0
+
+	increment := func() {
+		fmt.Println("Increment")
+		counter++
+	}
+
+	increment()
+	increment()
+	increment()
+
+	fmt.Println(counter)
 }
