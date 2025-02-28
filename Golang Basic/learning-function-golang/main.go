@@ -42,6 +42,15 @@ func main() {
 
 	goodbye := getGoodBye
 	fmt.Println(goodbye("Zaki"))
+
+	fmt.Println("===================")
+
+	sayHelloWithFilter("Zaki", spamFilter)
+
+	sayHelloWithTypeDeclaration("Alifian", spamFilter)
+
+	filtered := spamFilter
+	sayHelloWithFilter("Anjing", filtered)
 }
 
 func sayHello() {
@@ -79,4 +88,24 @@ func sumAll(numbers ...int) int {
 
 func getGoodBye(name string) string {
 	return "Good bye " + name
+}
+
+func sayHelloWithFilter(name string, filter func(string) string) {
+	filteredName := filter(name)
+	fmt.Println("Hello", filteredName)
+}
+
+type Filter func(string) string
+
+func sayHelloWithTypeDeclaration(name string, filter Filter) {
+	filteredName := filter(name)
+	fmt.Println("Hello", filteredName)
+}
+
+func spamFilter(name string) string {
+	if name == "Anjing" {
+		return "..."
+	} else {
+		return name
+	}
 }
