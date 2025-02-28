@@ -37,6 +37,11 @@ func main() {
 	numbers := []int{10, 10, 10, 10}
 	fmt.Println(sumAll(numbers...))
 	fmt.Println(sumAll(10, 10, 10, 10))
+
+	fmt.Println("===================")
+
+	goodbye := getGoodBye
+	fmt.Println(goodbye("Zaki"))
 }
 
 func sayHello() {
@@ -70,4 +75,8 @@ func sumAll(numbers ...int) int {
 	}
 
 	return total
+}
+
+func getGoodBye(name string) string {
+	return "Good bye " + name
 }
