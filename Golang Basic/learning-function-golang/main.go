@@ -26,6 +26,17 @@ func main() {
 
 	a, b, c := getCompleteName()
 	fmt.Println(a, b, c)
+
+	fmt.Println("===================")
+
+	fmt.Println(sumAll(10, 10, 10))
+	fmt.Println(sumAll(10, 10, 10, 10, 50))
+
+	fmt.Println("===================")
+
+	numbers := []int{10, 10, 10, 10}
+	fmt.Println(sumAll(numbers...))
+	fmt.Println(sumAll(10, 10, 10, 10))
 }
 
 func sayHello() {
@@ -49,4 +60,14 @@ func getCompleteName() (firstName, middleName, lastName string) {
 	middleName = "Zaki"
 	lastName = "Alifian"
 	return firstName, middleName, lastName
+}
+
+func sumAll(numbers ...int) int {
+	total := 0
+
+	for _, number := range numbers {
+		total += number
+	}
+
+	return total
 }
