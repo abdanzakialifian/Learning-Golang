@@ -16,6 +16,10 @@ func main() {
 	fmt.Println(animal.GetName())
 
 	sayHello(animal)
+
+	fmt.Println("===========================")
+
+	fmt.Println(emptyInterface())
 }
 
 type HashName interface {
@@ -40,4 +44,10 @@ type Animal struct {
 
 func (animal Animal) GetName() string {
 	return animal.Name
+}
+
+func emptyInterface() any {
+	// return 1
+	// return true
+	return "Empty Interface (any)"
 }
