@@ -70,6 +70,20 @@ func main() {
 	fmt.Println("===================")
 
 	closure()
+
+	fmt.Println("===================")
+
+	runApplication()
+
+	fmt.Println("===================")
+
+	runRecoverApp(true)
+
+	fmt.Println("Run recover app complete")
+
+	fmt.Println("===================")
+
+	runApp(true)
 }
 
 func sayHello() {
@@ -170,4 +184,41 @@ func closure() {
 	increment()
 
 	fmt.Println(counter)
+}
+
+func logging() {
+	fmt.Println("Complete calling function")
+}
+
+func runApplication() {
+	defer logging()
+	fmt.Println("Run application")
+}
+
+func endApp() {
+	fmt.Println("End app")
+}
+
+func runApp(error bool) {
+	defer endApp()
+
+	if error {
+		panic("Run app error")
+	}
+
+	fmt.Println("Run app success")
+}
+
+func endRecoverApp() {
+	fmt.Println("End app")
+	message := recover()
+	fmt.Println("An error accurred", message)
+}
+
+func runRecoverApp(error bool) {
+	defer endRecoverApp()
+
+	if error {
+		panic("Run app error")
+	}
 }
