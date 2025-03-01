@@ -9,7 +9,7 @@ func main() {
 
 	fmt.Println("===========================")
 
-	zaki.Name = "Abdan Zaki Alifian"
+	zaki.Name = "Zaki"
 	zaki.Address = "Indonesia"
 	zaki.Age = 25
 
@@ -36,10 +36,20 @@ func main() {
 	alifian := Customer{"Alifian", "Indonesia", 25}
 
 	fmt.Println(alifian)
+
+	fmt.Println("===========================")
+
+	abdan.sayHello("Steven")
+	zaki.sayHello("Steven")
+	alifian.sayHello("Steven")
 }
 
 type Customer struct {
 	Name    string
 	Address string
 	Age     int
+}
+
+func (customer Customer) sayHello(name string) {
+	fmt.Println("Hello", customer.Name, "my name is", name)
 }
