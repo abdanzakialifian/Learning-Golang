@@ -61,6 +61,14 @@ func main() {
 	address7 := Address{}
 	changeCountry(&address7)
 	fmt.Println(address7)
+
+	fmt.Println("========================")
+
+	zaki := Man{
+		Name: "Zaki",
+	}
+	zaki.Married()
+	fmt.Println(zaki.Name)
 }
 
 type Address struct {
@@ -71,4 +79,12 @@ type Address struct {
 
 func changeCountry(address *Address) {
 	address.Country = "Indonesia"
+}
+
+type Man struct {
+	Name string
+}
+
+func (man *Man) Married() {
+	man.Name = "Mr. " + man.Name
 }
