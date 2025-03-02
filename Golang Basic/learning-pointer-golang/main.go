@@ -45,6 +45,16 @@ func main() {
 	address4.City = "Jakarta Selatan"
 	fmt.Println(address1) // change because using asterisk operator (*)
 	fmt.Println(address4) // change because using asterisk operator (*)
+
+	fmt.Println("========================")
+
+	address5 := new(Address)
+	address6 := address5
+
+	address6.Country = "Indonesia"
+
+	fmt.Println(address5)
+	fmt.Println(address6)
 }
 
 type Address struct {
