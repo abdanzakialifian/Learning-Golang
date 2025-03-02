@@ -19,6 +19,32 @@ func main() {
 	address3.City = "Purbalingga"
 	fmt.Println(address1) // change
 	fmt.Println(address3) // change
+
+	address4 := &address1 // copy by reference
+	address4.City = "Tegal"
+	fmt.Println(address1) // change
+	fmt.Println(address4) // change
+
+	fmt.Println("========================")
+
+	address3 = &Address{
+		City:     "Jakarta",
+		Province: "DKI Jakarta",
+		Country:  "Indonesia",
+	}
+	fmt.Println(address1) // do not change
+	fmt.Println(address3) // change
+
+	fmt.Println("========================")
+
+	*address4 = Address{
+		City:     "Jakarta",
+		Province: "DKI Jakarta",
+		Country:  "Indonesia",
+	}
+	address4.City = "Jakarta Selatan"
+	fmt.Println(address1) // change because using asterisk operator (*)
+	fmt.Println(address4) // change because using asterisk operator (*)
 }
 
 type Address struct {
