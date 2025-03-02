@@ -55,10 +55,20 @@ func main() {
 
 	fmt.Println(address5)
 	fmt.Println(address6)
+
+	fmt.Println("========================")
+
+	address7 := Address{}
+	changeCountry(&address7)
+	fmt.Println(address7)
 }
 
 type Address struct {
 	City     string
 	Province string
 	Country  string
+}
+
+func changeCountry(address *Address) {
+	address.Country = "Indonesia"
 }
