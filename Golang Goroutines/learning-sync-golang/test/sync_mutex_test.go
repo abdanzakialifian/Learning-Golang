@@ -180,3 +180,27 @@ func TestPool(t *testing.T) {
 	wait.Wait()
 	fmt.Println("Complete.")
 }
+
+func TestMap(t *testing.T) {
+	data := sync.Map{}
+	wait := sync.WaitGroup{}
+
+	var addToMap = func(value int) {
+		defer wait.Done()
+		data.Store(value, value)
+	}
+
+	for i := range 100 {
+		wait.Add(1)
+		go addToMap(i)
+	}
+
+	wait.Wait()
+
+	data.Range(func(key, value any) bool {
+		fmt.Println(key, ":", value)
+		return true
+	})
+
+	fmt.Println("Complete.")
+}
