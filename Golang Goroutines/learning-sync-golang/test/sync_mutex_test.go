@@ -163,15 +163,19 @@ func TestPool(t *testing.T) {
 
 	wait := sync.WaitGroup{}
 
-	pool.Put("Abdan")
-	pool.Put("Zaki")
-	pool.Put("Alifian")
+	str1 := "Abdan"
+	str2 := "Zaki"
+	str3 := "Alifian"
+
+	pool.Put(&str1)
+	pool.Put(&str2)
+	pool.Put(&str3)
 
 	for range 10 {
 		wait.Add(1)
 		go func() {
-			data := pool.Get()
-			fmt.Println(data)
+			data := pool.Get().(*string)
+			fmt.Println(*data)
 			pool.Put(data)
 			wait.Done()
 		}()
