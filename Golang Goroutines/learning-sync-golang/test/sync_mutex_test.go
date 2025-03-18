@@ -153,3 +153,30 @@ var counter = 0
 func OnlyOnce() {
 	counter++
 }
+
+func TestPool(t *testing.T) {
+	pool := sync.Pool{
+		New: func() any {
+			return "New"
+		},
+	}
+
+	wait := sync.WaitGroup{}
+
+	pool.Put("Abdan")
+	pool.Put("Zaki")
+	pool.Put("Alifian")
+
+	for range 10 {
+		wait.Add(1)
+		go func() {
+			data := pool.Get()
+			fmt.Println(data)
+			pool.Put(data)
+			wait.Done()
+		}()
+	}
+
+	wait.Wait()
+	fmt.Println("Complete.")
+}
