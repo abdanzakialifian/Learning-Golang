@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"sync"
 	"testing"
+	"time"
 )
 
 type contextKey string
@@ -59,6 +60,25 @@ func TestContextWithCancel(t *testing.T) {
 	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
 }
 
+func TestContextWithTimeout(t *testing.T) {
+	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
+
+	parent := context.Background()
+	ctx, cancel := context.WithTimeout(parent, 5*time.Second)
+	defer cancel()
+
+	destination := CreateCounter(ctx)
+	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
+
+	for n := range destination {
+		println("Counter :", n)
+	}
+
+	group.Wait()
+
+	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
+}
+
 func CreateCounter(ctx context.Context) chan int {
 	destination := make(chan int)
 
@@ -74,6 +94,7 @@ func CreateCounter(ctx context.Context) chan int {
 			default:
 				destination <- counter
 				counter++
+				time.Sleep(1 * time.Second)
 			}
 		}
 	}()
