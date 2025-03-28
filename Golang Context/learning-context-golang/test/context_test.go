@@ -3,6 +3,8 @@ package test
 import (
 	"context"
 	"fmt"
+	"runtime"
+	"sync"
 	"testing"
 )
 
@@ -31,4 +33,50 @@ func TestContextWithValue(t *testing.T) {
 	fmt.Println(contextF.Value(contextKey("f")))
 	fmt.Println(contextF.Value(contextKey("c")))
 	fmt.Println(contextF.Value(contextKey("b")))
+}
+
+var group = sync.WaitGroup{}
+
+func TestContextWithCancel(t *testing.T) {
+	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
+
+	parent := context.Background()
+	ctx, cancel := context.WithCancel(parent)
+
+	destination := CreateCounter(ctx)
+	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
+	for n := range destination {
+		fmt.Println("Counter :", n)
+		if n == 10 {
+			break
+		}
+	}
+
+	cancel()
+
+	group.Wait()
+
+	fmt.Println("Total Goroutine :", runtime.NumGoroutine())
+}
+
+func CreateCounter(ctx context.Context) chan int {
+	destination := make(chan int)
+
+	group.Add(1)
+	go func() {
+		defer close(destination)
+		defer group.Done()
+		counter := 1
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				destination <- counter
+				counter++
+			}
+		}
+	}()
+
+	return destination
 }
