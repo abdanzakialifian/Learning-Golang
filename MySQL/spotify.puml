@@ -1,0 +1,119 @@
+@startuml Spotify
+title Database Design Spotify Clone
+entity Artist {
+    *id: varchar
+    --
+    *name: varchar
+    instagram: varchar
+    facebook: varchar
+    twitter: varchar
+    wikipedia: varchar
+    bio: text
+}
+
+entity Album {
+    *id: varchar
+    --
+    *title: varchar
+    *release: year
+    *image: varchar
+}
+
+entity Song {
+    *id: varchar
+    --
+    *album_id: varchar
+    *title: varchar
+    *duration: int
+}
+
+entity PlaylistCategory {
+    *id: varchar
+    --
+    *name: varchar
+    *image: varchar
+    *icon: varchar
+}
+
+entity Playlist {
+    *id: varchar
+    --
+    *name: varchar
+    description: text
+    image: varchar
+    category_id: varchar
+    *user_id: varchar
+}
+
+entity PodcastCategory {
+    *id: varchar
+    --
+    *name: varchar
+    *image: varchar
+    *icon: varchar
+}
+
+entity Podcast {
+    *id: varchar
+    --
+    *name: varchar
+    about: text
+    image: varchar
+    category_id: varchar
+    *user_id: varchar
+}
+
+entity Episode {
+    *id: varchar
+    --
+    *podcast_id: varchar
+    *title: varchar
+    description: text
+    published_on: date
+    duration: int
+}
+
+entity User {
+    *id: varchar
+    --
+    *email: varchar
+    *name: varchar
+    birth_date: date
+}
+
+entity Concert {
+    *id: varchar
+    --
+    *event_on: datetime
+    *location: varchar
+    *url_ticket: varchar
+    lat: double
+    long: double
+}
+
+Artist }|..|{ Album : Has
+
+Album ||..|{ Song : Has
+
+Artist }|..|{ Song : Sing
+
+PlaylistCategory |o..|{ Playlist : Has
+
+User ||..o{ Playlist : Create
+
+Playlist }o..o{ Song : Has
+
+PodcastCategory |o..|{ Podcast : Has
+
+User ||..o{ Podcast : Create
+
+Podcast ||..o{ Episode : Has
+
+Concert }o..|{ Artist : Perform
+
+User }o..o{ Artist : Follow
+
+User }o..o{ Song : Like
+
+User }o..o{ Playlist : Follow
+@enduml
