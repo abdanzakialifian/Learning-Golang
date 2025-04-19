@@ -1,0 +1,38 @@
+@startuml Notification
+entity User {
+    *id: varchar(100) <<PK>>
+    --
+    *name: varchar(100)
+}
+
+entity Notification {
+    *id int auto increment <<PK>>
+    --
+    *title varchar(200)
+    *description text
+    *created_on timestamp
+    --
+    user_id varchar(100) <<FK>>
+    category_id varchar(100) <<FK>>
+}
+
+entity Category {
+    *id varchar(100) <<PK>>
+    --
+    *name varchar(100)
+}
+
+entity NotificationRead {
+    *id int auto increment <<PK>>
+    --
+    *is_read boolean
+    --
+    *notification_id int <<FK>>
+    *user_id varchar(100) <<FK>>
+}
+
+User ||..o{ Notification
+Category ||..o{ Notification
+Notification ||..o{ NotificationRead
+User ||..o{ NotificationRead
+@enduml
