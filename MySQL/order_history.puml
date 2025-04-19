@@ -1,0 +1,45 @@
+@startuml Order History
+entity Order {
+    *id varchar(100) <<PK>>
+    *created_at timestamp
+    --
+    *seller_id varchar(100)
+    *seller_name varchar(100)
+    --
+    *buyer_id varchar(100)
+    *buyer_name varchar(100)
+    --
+    *shipping_name varchar(100)
+    *shipping_address varchar(255)
+    *shipping_phone_number varchar(25)
+    --
+    *logistic_id varchar(100)
+    *logistic_name varchar(100)
+    --
+    *payment_method_id varchar(100)
+    *payment_method_name varchar(100)
+    --
+    *total_quantity int
+    *total_weight int
+    *total_product_amount bigint
+    *total_shipping_cost bigint
+    *total_shopping_amount bigint
+    *service_charge bigint
+    *total_amount bigint
+}
+
+entity OrderDetail {
+    *id varchar(100) <<PK>>
+    *order_id varchar(100) <<FK>>
+    --
+    *product_id varchar(100)
+    *product_name varchar(255)
+    *product_weight int
+    *product_price bigint
+    -- 
+    *quantity int
+    *total_amount bigint
+}
+
+Order ||..|{ OrderDetail
+@enduml
