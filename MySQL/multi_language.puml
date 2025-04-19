@@ -1,0 +1,17 @@
+@startuml Multi Language
+entity Category {
+    *id varchar(100) <<PK>>
+    --
+    *position Int
+}
+
+entity CategoryTranslation {
+    *category_id varchar(100) <<FK>> <<PK>>
+    *language varchar(100) <<PK>>
+    --
+    *name varchar(100)
+    *description text
+}
+
+Category ||..o{ CategoryTranslation
+@enduml
