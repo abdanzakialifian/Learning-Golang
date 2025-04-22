@@ -2,8 +2,10 @@ package test
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 )
 
 var db = GetConnection()
@@ -69,6 +71,63 @@ func TestSelectQuerySql(t *testing.T) {
 		}
 		fmt.Println("Id :", id)
 		fmt.Println("Name :", name)
+	}
+
+	defer rows.Close()
+}
+
+func TestInsertCustomer(t *testing.T) {
+	defer db.Close()
+
+	ctx := context.Background()
+
+	query := "insert into customer (id, name, email, balance, rating, birth_date, married) values ('P003','Alifian','alifian@gmail.com',3000000,70.0,'1999-07-7',false)"
+	_, err := db.ExecContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func TestSelectCustomer(t *testing.T) {
+	defer db.Close()
+
+	ctx := context.Background()
+
+	query := "select id, name, email, balance, rating, birth_date, married, created_at from customer"
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		var id string
+		var name string
+		var email sql.NullString
+		var balance int
+		var rating float32
+		var birthDate sql.NullTime
+		var married bool
+		var createdAt time.Time
+
+		err := rows.Scan(&id, &name, &email, &balance, &rating, &birthDate, &married, &createdAt)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Id :", id)
+		fmt.Println("Name :", name)
+		if email.Valid {
+			fmt.Println("Email :", email.String)
+		}
+		fmt.Println("Balance :", balance)
+		fmt.Println("Rating :", rating)
+		if birthDate.Valid {
+			fmt.Println("Birth Date :", birthDate.Time)
+		}
+		fmt.Println("Married :", married)
+		fmt.Println("Created At :", createdAt)
+
+		fmt.Println("=============================")
 	}
 
 	defer rows.Close()
