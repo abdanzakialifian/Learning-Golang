@@ -49,3 +49,27 @@ func TestUpdateExecSql(t *testing.T) {
 
 	fmt.Println("Success update customer data")
 }
+
+func TestSelectQuerySql(t *testing.T) {
+	defer db.Close()
+
+	ctx := context.Background()
+
+	query := "select * from customer"
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		var id, name string
+		err := rows.Scan(&id, &name)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Id :", id)
+		fmt.Println("Name :", name)
+	}
+
+	defer rows.Close()
+}
