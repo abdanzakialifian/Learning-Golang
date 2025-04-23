@@ -203,3 +203,24 @@ func TestExecSqlParameter(t *testing.T) {
 
 	fmt.Println("Success insert new user")
 }
+
+func TestLastInsertId(t *testing.T) {
+	defer db.Close()
+
+	ctx := context.Background()
+
+	email := "zaki@gmail.com"
+	comment := "Test comment"
+
+	query := "insert into comments(email, comment) values(?,?)"
+	result, err := db.ExecContext(ctx, query, email, comment)
+	if err != nil {
+		panic(err)
+	}
+	insertId, err := result.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Success insert new comment with id", insertId)
+}
