@@ -252,3 +252,75 @@ func TestPrepareStatement(t *testing.T) {
 
 	defer statement.Close()
 }
+
+func TestCommitTransaction(t *testing.T) {
+	defer db.Close()
+
+	ctx := context.Background()
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	// do transaction
+	query := "insert into comments(email,comment) values(?,?)"
+	statement, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 1; i <= 10; i++ {
+		email := "zaki" + strconv.Itoa(i) + "@gmail.com"
+		comment := "comment " + strconv.Itoa(i)
+		result, err := statement.ExecContext(ctx, email, comment)
+		if err != nil {
+			panic(err)
+		}
+		id, err := result.LastInsertId()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Comment Id", id)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func TestRollbackTransaction(t *testing.T) {
+	defer db.Close()
+
+	ctx := context.Background()
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	// do transaction
+	query := "insert into comments(email,comment) values(?,?)"
+	statement, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 1; i <= 10; i++ {
+		email := "zaki" + strconv.Itoa(i) + "@gmail.com"
+		comment := "comment " + strconv.Itoa(i)
+		result, err := statement.ExecContext(ctx, email, comment)
+		if err != nil {
+			panic(err)
+		}
+		id, err := result.LastInsertId()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Comment Id", id)
+	}
+
+	err = tx.Rollback()
+	if err != nil {
+		panic(err)
+	}
+}
