@@ -3,11 +3,11 @@ package test
 import (
 	"embed"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"text/template"
 )
 
 func TestTemplateCaching(t *testing.T) {
