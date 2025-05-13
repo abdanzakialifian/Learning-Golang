@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"learning-restful-api-golang/helper"
-	"learning-restful-api-golang/model/response"
+	"learning-restful-api-golang/model/domain"
 )
 
 type CategoryRepositoryImpl struct{}
@@ -14,7 +14,7 @@ func NewCategoryRepository() CategoryRepository {
 	return &CategoryRepositoryImpl{}
 }
 
-func (repository *CategoryRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, categoryName string) response.CategoryResponse {
+func (repository *CategoryRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, categoryName string) domain.Category {
 	sql := "insert into category(name) values(?)"
 
 	result, err := tx.ExecContext(ctx, sql, categoryName)
@@ -23,20 +23,20 @@ func (repository *CategoryRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, 
 	id, err := result.LastInsertId()
 	helper.PanicIfError(err)
 
-	return response.CategoryResponse{
+	return domain.Category{
 		Id:   int(id),
 		Name: categoryName,
 	}
 }
 
-func (repository *CategoryRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, categoryId int) (response.CategoryResponse, error) {
+func (repository *CategoryRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, categoryId int) (domain.Category, error) {
 	sql := "select * from category where id = ?"
 
 	rows, err := tx.QueryContext(ctx, sql, categoryId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
-	category := response.CategoryResponse{}
+	category := domain.Category{}
 
 	if rows.Next() {
 		err := rows.Scan(&category.Id, &category.Name)
@@ -47,17 +47,17 @@ func (repository *CategoryRepositoryImpl) FindById(ctx context.Context, tx *sql.
 	}
 }
 
-func (repository *CategoryRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []response.CategoryResponse {
+func (repository *CategoryRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Category {
 	sql := "select * from category"
 
 	rows, err := tx.QueryContext(ctx, sql)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
-	categories := []response.CategoryResponse{}
+	categories := []domain.Category{}
 
 	for rows.Next() {
-		category := response.CategoryResponse{}
+		category := domain.Category{}
 		err := rows.Scan(&category.Id, &category.Name)
 		helper.PanicIfError(err)
 		categories = append(categories, category)
@@ -66,13 +66,13 @@ func (repository *CategoryRepositoryImpl) FindAll(ctx context.Context, tx *sql.T
 	return categories
 }
 
-func (repository *CategoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, categoryId int, categoryName string) response.CategoryResponse {
+func (repository *CategoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, categoryId int, categoryName string) domain.Category {
 	sql := "update category set name = ? where id = ?"
 
 	_, err := tx.ExecContext(ctx, sql, categoryName, categoryId)
 	helper.PanicIfError(err)
 
-	return response.CategoryResponse{
+	return domain.Category{
 		Id:   categoryId,
 		Name: categoryName,
 	}

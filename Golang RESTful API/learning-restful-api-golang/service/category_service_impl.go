@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"learning-restful-api-golang/helper"
-	"learning-restful-api-golang/model/domain"
 	"learning-restful-api-golang/model/request"
+	"learning-restful-api-golang/model/response"
 	"learning-restful-api-golang/repository"
 
 	"github.com/go-playground/validator/v10"
@@ -25,7 +25,7 @@ func NewCategoryService(categoryRepository repository.CategoryRepository, DB *sq
 	}
 }
 
-func (service *CategoryServiceImpl) Create(ctx context.Context, request request.CategoryCreateRequest) domain.Category {
+func (service *CategoryServiceImpl) Create(ctx context.Context, request request.CategoryCreateRequest) response.CategoryResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -35,10 +35,10 @@ func (service *CategoryServiceImpl) Create(ctx context.Context, request request.
 
 	response := service.CategoryRepository.Save(ctx, tx, request.Name)
 
-	return helper.MapCategoryResponseToCategory(response)
+	return helper.MapCategoryToCategoryResponse(response)
 }
 
-func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int) domain.Category {
+func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int) response.CategoryResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -46,20 +46,20 @@ func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int
 	response, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
 	helper.PanicIfError(err)
 
-	return helper.MapCategoryResponseToCategory(response)
+	return helper.MapCategoryToCategoryResponse(response)
 }
 
-func (service *CategoryServiceImpl) FindAll(ctx context.Context) []domain.Category {
+func (service *CategoryServiceImpl) FindAll(ctx context.Context) []response.CategoryResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
 	responses := service.CategoryRepository.FindAll(ctx, tx)
 
-	return helper.MapCategoriesResponseToCategories(responses)
+	return helper.MapCategoriesToCategoriesResponse(responses)
 }
 
-func (service *CategoryServiceImpl) Update(ctx context.Context, request request.CategoryUpdateRequest) domain.Category {
+func (service *CategoryServiceImpl) Update(ctx context.Context, request request.CategoryUpdateRequest) response.CategoryResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -72,7 +72,7 @@ func (service *CategoryServiceImpl) Update(ctx context.Context, request request.
 
 	response = service.CategoryRepository.Update(ctx, tx, response.Id, request.Name)
 
-	return helper.MapCategoryResponseToCategory(response)
+	return helper.MapCategoryToCategoryResponse(response)
 }
 
 func (service *CategoryServiceImpl) Delete(ctx context.Context, categoryId int) {

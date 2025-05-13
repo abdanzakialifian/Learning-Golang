@@ -5,17 +5,17 @@ import (
 	"learning-restful-api-golang/model/response"
 )
 
-func MapCategoryResponseToCategory(response response.CategoryResponse) domain.Category {
-	return domain.Category{
-		Id:   response.Id,
-		Name: response.Name,
+func MapCategoryToCategoryResponse(category domain.Category) response.CategoryResponse {
+	return response.CategoryResponse{
+		Id:   category.Id,
+		Name: category.Name,
 	}
 }
 
-func MapCategoriesResponseToCategories(responses []response.CategoryResponse) []domain.Category {
-	var categories []domain.Category
-	for _, response := range responses {
-		categories = append(categories, MapCategoryResponseToCategory(response))
+func MapCategoriesToCategoriesResponse(categories []domain.Category) []response.CategoryResponse {
+	var responses []response.CategoryResponse
+	for _, response := range categories {
+		responses = append(responses, MapCategoryToCategoryResponse(response))
 	}
-	return categories
+	return responses
 }

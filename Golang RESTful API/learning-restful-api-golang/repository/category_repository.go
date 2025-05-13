@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"learning-restful-api-golang/model/response"
+	"learning-restful-api-golang/model/domain"
 )
 
 type CategoryRepository interface {
-	Save(ctx context.Context, tx *sql.Tx, categoryName string) response.CategoryResponse
-	FindById(ctx context.Context, tx *sql.Tx, categoryId int) (response.CategoryResponse, error)
-	FindAll(ctx context.Context, tx *sql.Tx) []response.CategoryResponse
-	Update(ctx context.Context, tx *sql.Tx, categoryId int, categoryName string) response.CategoryResponse
+	Save(ctx context.Context, tx *sql.Tx, categoryName string) domain.Category
+	FindById(ctx context.Context, tx *sql.Tx, categoryId int) (domain.Category, error)
+	FindAll(ctx context.Context, tx *sql.Tx) []domain.Category
+	Update(ctx context.Context, tx *sql.Tx, categoryId int, categoryName string) domain.Category
 	Delete(ctx context.Context, tx *sql.Tx, categoryId int)
 }
