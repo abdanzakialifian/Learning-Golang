@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"learning-restful-api-golang/exception"
 	"learning-restful-api-golang/helper"
 	"learning-restful-api-golang/model/request"
 	"learning-restful-api-golang/model/response"
@@ -44,7 +45,9 @@ func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int
 	defer helper.CommitOrRollback(tx)
 
 	response, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	return helper.MapCategoryToCategoryResponse(response)
 }
@@ -68,7 +71,9 @@ func (service *CategoryServiceImpl) Update(ctx context.Context, request request.
 	defer helper.CommitOrRollback(tx)
 
 	response, err := service.CategoryRepository.FindById(ctx, tx, request.Id)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	response = service.CategoryRepository.Update(ctx, tx, response.Id, request.Name)
 
@@ -81,7 +86,9 @@ func (service *CategoryServiceImpl) Delete(ctx context.Context, categoryId int) 
 	defer helper.CommitOrRollback(tx)
 
 	response, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	service.CategoryRepository.Delete(ctx, tx, response.Id)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"learning-restful-api-golang/app"
 	"learning-restful-api-golang/controller"
+	"learning-restful-api-golang/exception"
 	"learning-restful-api-golang/helper"
 	"learning-restful-api-golang/repository"
 	"learning-restful-api-golang/service"
@@ -26,6 +27,8 @@ func main() {
 	router.GET("/api/categories", categoryController.FindAll)
 	router.PUT("/api/categories/:id", categoryController.Update)
 	router.DELETE("/api/categories/:id", categoryController.Delete)
+
+	router.PanicHandler = exception.ErrorHandler
 
 	server := http.Server{
 		Addr:    "localhost:3000",
