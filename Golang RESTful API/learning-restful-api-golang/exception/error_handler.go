@@ -9,6 +9,10 @@ import (
 )
 
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err any) {
+	if unauthorizedError(writer, request, err) {
+		return
+	}
+
 	if validationError(writer, request, err) {
 		return
 	}
@@ -18,6 +22,22 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err any) {
 	}
 
 	internalServerError(writer, request, err)
+}
+
+func unauthorizedError(writer http.ResponseWriter, _ *http.Request, err any) bool {
+	exception, ok := err.(UnauthorizedError)
+	if ok {
+		writer.WriteHeader(http.StatusUnauthorized)
+		response := base.BaseResponse{
+			Code:   http.StatusUnauthorized,
+			Status: "Unauthorized",
+			Data:   exception.Error,
+		}
+		helper.WriteToResponseBody(writer, response)
+		return true
+	} else {
+		return false
+	}
 }
 
 func validationError(writer http.ResponseWriter, _ *http.Request, err any) bool {

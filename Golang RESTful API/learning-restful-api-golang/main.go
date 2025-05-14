@@ -3,8 +3,8 @@ package main
 import (
 	"learning-restful-api-golang/app"
 	"learning-restful-api-golang/controller"
-	"learning-restful-api-golang/exception"
 	"learning-restful-api-golang/helper"
+	"learning-restful-api-golang/middleware"
 	"learning-restful-api-golang/repository"
 	"learning-restful-api-golang/service"
 	"net/http"
@@ -28,11 +28,13 @@ func main() {
 	router.PUT("/api/categories/:id", categoryController.Update)
 	router.DELETE("/api/categories/:id", categoryController.Delete)
 
-	router.PanicHandler = exception.ErrorHandler
+	authMiddleware := middleware.NewAuthMiddleware(router)
+
+	errorMiddleware := middleware.NewErrorMiddleware(authMiddleware)
 
 	server := http.Server{
 		Addr:    "localhost:3000",
-		Handler: router,
+		Handler: errorMiddleware,
 	}
 
 	err := server.ListenAndServe()
