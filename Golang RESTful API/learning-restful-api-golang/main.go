@@ -10,7 +10,6 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
@@ -20,13 +19,7 @@ func main() {
 	categoryService := service.NewCategoryService(categoryRepository, database, validate)
 	categoryController := controller.NewCategoryController(categoryService)
 
-	router := httprouter.New()
-
-	router.POST("/api/categories", categoryController.Create)
-	router.GET("/api/categories/:id", categoryController.FindById)
-	router.GET("/api/categories", categoryController.FindAll)
-	router.PUT("/api/categories/:id", categoryController.Update)
-	router.DELETE("/api/categories/:id", categoryController.Delete)
+	router := app.NewRouter(categoryController)
 
 	authMiddleware := middleware.NewAuthMiddleware(router)
 
