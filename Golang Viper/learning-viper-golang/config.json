@@ -1,0 +1,12 @@
+{
+    "app":{
+        "name": "learning-viper-golang",
+        "version": "1.0.0",
+        "author": "Abdan Zaki Alifian"
+    },
+    "database":{
+        "show_sql": true,
+        "host": "localhost",
+        "port": 3306
+    }
+}
