@@ -1,6 +1,7 @@
 package test
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -85,4 +86,38 @@ func TestScanRowsSQL(t *testing.T) {
 		assert.Nil(t, err)
 	}
 	assert.Equal(t, 3, len(samples))
+}
+
+func TestCreateUser(t *testing.T) {
+	user := User{
+		Id:       "1",
+		Password: "secret",
+		Name: Name{
+			FirstName:  "Abdan",
+			MiddleName: "Zaki",
+			LastName:   "Alifian",
+		},
+		Information: "This will be ignored",
+	}
+
+	response := db.Create(&user)
+	assert.Nil(t, response.Error)
+	assert.Equal(t, int64(1), response.RowsAffected)
+}
+
+func TestBatchInsert(t *testing.T) {
+	var users []User
+	for i := 2; i < 10; i++ {
+		users = append(users, User{
+			Id:       strconv.Itoa(i),
+			Password: "secret",
+			Name: Name{
+				FirstName: "User " + strconv.Itoa(i),
+			},
+		})
+	}
+
+	response := db.Create(&users)
+	assert.Nil(t, response.Error)
+	assert.Equal(t, int64(8), response.RowsAffected)
 }
