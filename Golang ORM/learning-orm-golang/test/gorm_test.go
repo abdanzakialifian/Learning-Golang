@@ -195,3 +195,109 @@ func TestManualTransactionError(t *testing.T) {
 		tx.Commit()
 	}
 }
+
+func TestQuerySingleObject(t *testing.T) {
+	user := User{}
+	err := db.First(&user).Error
+	assert.Nil(t, err)
+	assert.Equal(t, "1", user.Id)
+
+	user = User{}
+	err = db.Last(&user).Error
+	assert.Nil(t, err)
+	assert.Equal(t, "9", user.Id)
+}
+
+func TestQuerySingleObjectInlineCondition(t *testing.T) {
+	user := User{}
+	err := db.Take(&user, "id = ?", "5").Error
+	assert.Nil(t, err)
+	assert.Equal(t, "5", user.Id)
+	assert.Equal(t, "User 5", user.Name.FirstName)
+}
+
+func TestQueryAllObjects(t *testing.T) {
+	var users []User
+	err := db.Find(&users, "id in ?", []string{"1", "2", "3", "4", "5"}).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 5, len(users))
+}
+
+func TestQueryCondition(t *testing.T) {
+	var users []User
+	err := db.Where("first_name like ?", "%User%").Where("password = ?", "secret").Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 14, len(users))
+}
+
+func TestOrOperator(t *testing.T) {
+	var users []User
+	err := db.Where("first_name like ?", "%User%").Or("password = ?", "secret").Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 15, len(users))
+}
+
+func TestNotOperator(t *testing.T) {
+	var users []User
+	err := db.Not("first_name like ?", "%User%").Where("password = ?", "secret").Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(users))
+}
+
+func TestSelectFields(t *testing.T) {
+	var users []User
+	err := db.Select("id", "first_name").Find(&users).Error
+	assert.Nil(t, err)
+
+	for _, user := range users {
+		assert.NotNil(t, user.Id)
+		assert.Equal(t, "", user.Password)
+	}
+
+	assert.Equal(t, 15, len(users))
+}
+
+func TestStructCondition(t *testing.T) {
+	userCondition := User{
+		Name: Name{
+			FirstName: "User 5",
+		},
+		Password: "secret",
+	}
+
+	user := new(User)
+	err := db.Where(userCondition).Take(user).Error
+	assert.Nil(t, err)
+	assert.Equal(t, "5", user.Id)
+}
+
+func TestMapCondition(t *testing.T) {
+	mapCondition := map[string]any{
+		"middle_name": "",
+		"last_name":   "",
+	}
+
+	var users []User
+	err := db.Where(mapCondition).Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 14, len(users))
+}
+
+func TestOrderLimitOffset(t *testing.T) {
+	var users []User
+	err := db.Order("id asc, first_name desc").Limit(5).Offset(5).Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 5, len(users))
+}
+
+func TestQueryNonModel(t *testing.T) {
+	type UserResponse struct {
+		Id        string `gorm:"column:id"`
+		FirstName string `gorm:"column:first_name"`
+		LastName  string `gorm:"column:last_name"`
+	}
+	var users []UserResponse
+	err := db.Model(new(User)).Select("id", "first_name", "last_name").Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 15, len(users))
+}
