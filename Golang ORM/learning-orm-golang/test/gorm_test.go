@@ -385,12 +385,27 @@ func TestSaveOrUpdateNonAutoIncrement(t *testing.T) {
 
 func TestConflict(t *testing.T) {
 	user := User{
-		Id: "88",
+		Id: "77",
 		Name: Name{
-			FirstName: "User 88",
+			FirstName: "User 77",
 		},
 	}
 
 	err := db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&user).Error
+	assert.Nil(t, err)
+}
+
+func TestDelete(t *testing.T) {
+	user := new(User)
+	err := db.Take(user, "id = ?", "88").Error
+	assert.Nil(t, err)
+
+	err = db.Delete(user).Error
+	assert.Nil(t, err)
+
+	err = db.Delete(user, "id = ?", "99").Error
+	assert.Nil(t, err)
+
+	err = db.Delete(user).Where("id = ?", "77").Error
 	assert.Nil(t, err)
 }
