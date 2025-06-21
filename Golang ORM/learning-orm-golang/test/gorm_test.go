@@ -460,3 +460,32 @@ func TestLock(t *testing.T) {
 		return err
 	})
 }
+
+func TestCreateWallet(t *testing.T) {
+	wallet := Wallet{
+		Id:      "1",
+		UserId:  "1",
+		Balance: 1000000,
+	}
+
+	err := db.Create(&wallet).Error
+	assert.Nil(t, err)
+}
+
+func TestRetrieveRelation(t *testing.T) {
+	var user = new(User)
+	err := db.Preload("Wallet").Take(user, "id = ?", "1").Error
+	assert.Nil(t, err)
+
+	assert.Equal(t, "1", user.Id)
+	assert.Equal(t, "1", user.Wallet.UserId)
+}
+
+func TestRetrieveRelationJoin(t *testing.T) {
+	var user = new(User)
+	err := db.Joins("Wallet").Take(user, "user.id = ?", "1").Error
+	assert.Nil(t, err)
+
+	assert.Equal(t, "1", user.Id)
+	assert.Equal(t, "1", user.Wallet.UserId)
+}
