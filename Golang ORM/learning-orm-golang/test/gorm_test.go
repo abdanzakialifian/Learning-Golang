@@ -528,29 +528,29 @@ func TestSkipAutoCreateUpdate(t *testing.T) {
 
 func TestUserAndAddress(t *testing.T) {
 	user := User{
-		Id:       "50",
+		Id:       "2",
 		Password: "secret",
 		Name: Name{
-			FirstName: "User 50",
+			FirstName: "User 2",
 		},
 		Wallet: Wallet{
-			Id:      "50",
-			UserId:  "50",
+			Id:      "2",
+			UserId:  "2",
 			Balance: 1000000,
 		},
 		Addresses: []Address{
 			{
-				UserId:  "50",
+				UserId:  "2",
 				Address: "Street A",
 			},
 			{
-				UserId:  "50",
+				UserId:  "2",
 				Address: "Street B",
 			},
 		},
 	}
 
-	err := db.Create(&user).Error
+	err := db.Save(&user).Error
 	assert.Nil(t, err)
 }
 
@@ -563,5 +563,30 @@ func TestPreloadJoinsOneToMany(t *testing.T) {
 func TestTakePreloadJoinsOneToMany(t *testing.T) {
 	user := new(User)
 	err := db.Preload("Addresses").Joins("Wallet").Take(user, "user.id = ?", "50").Error
+	assert.Nil(t, err)
+}
+
+func TestBelongsToOneToMany(t *testing.T) {
+	fmt.Println("============Preload============")
+	var addresses []Address
+	err := db.Preload("User").Find(&addresses).Error
+	assert.Nil(t, err)
+
+	fmt.Println("============Joins============")
+
+	addresses = []Address{}
+	err = db.Joins("User").Find(&addresses).Error
+	assert.Nil(t, err)
+}
+
+func TestBelongToOneToOne(t *testing.T) {
+	fmt.Println("============Preload============")
+	var wallets []Wallet
+	err := db.Preload("User").Find(&wallets).Error
+	assert.Nil(t, err)
+
+	fmt.Println("============Joins============")
+	wallets = []Wallet{}
+	err = db.Joins("User").Find(&wallets).Error
 	assert.Nil(t, err)
 }
