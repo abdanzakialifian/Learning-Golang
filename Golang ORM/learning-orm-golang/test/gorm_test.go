@@ -525,3 +525,43 @@ func TestSkipAutoCreateUpdate(t *testing.T) {
 	err := db.Omit(clause.Associations).Create(&user).Error
 	assert.Nil(t, err)
 }
+
+func TestUserAndAddress(t *testing.T) {
+	user := User{
+		Id:       "50",
+		Password: "secret",
+		Name: Name{
+			FirstName: "User 50",
+		},
+		Wallet: Wallet{
+			Id:      "50",
+			UserId:  "50",
+			Balance: 1000000,
+		},
+		Addresses: []Address{
+			{
+				UserId:  "50",
+				Address: "Street A",
+			},
+			{
+				UserId:  "50",
+				Address: "Street B",
+			},
+		},
+	}
+
+	err := db.Create(&user).Error
+	assert.Nil(t, err)
+}
+
+func TestPreloadJoinsOneToMany(t *testing.T) {
+	var users []User
+	err := db.Preload("Addresses").Joins("Wallet").Find(&users).Error
+	assert.Nil(t, err)
+}
+
+func TestTakePreloadJoinsOneToMany(t *testing.T) {
+	user := new(User)
+	err := db.Preload("Addresses").Joins("Wallet").Take(user, "user.id = ?", "50").Error
+	assert.Nil(t, err)
+}
