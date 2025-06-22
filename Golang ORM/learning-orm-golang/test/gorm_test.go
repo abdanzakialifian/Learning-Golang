@@ -590,3 +590,104 @@ func TestBelongToOneToOne(t *testing.T) {
 	err = db.Joins("User").Find(&wallets).Error
 	assert.Nil(t, err)
 }
+
+func TestCreateManyToMany(t *testing.T) {
+	product := Product{
+		Id:    "P001",
+		Name:  "Example Product",
+		Price: 1000000,
+	}
+
+	err := db.Save(&product).Error
+	assert.Nil(t, err)
+
+	err = db.Table("user_like_product").Create(map[string]any{
+		"user_id":    "1",
+		"product_id": "P001",
+	}).Error
+	assert.Nil(t, err)
+
+	err = db.Table("user_like_product").Create(map[string]any{
+		"user_id":    "2",
+		"product_id": "P001",
+	}).Error
+	assert.Nil(t, err)
+}
+
+func TestPreloadManyToManyProduct(t *testing.T) {
+	product := new(Product)
+	err := db.Preload("LikedByUsers").Take(product, "id = ?", "P001").Error
+	assert.Nil(t, err)
+	assert.Equal(t, 2, len(product.LikedByUsers))
+}
+
+func TestManyToManyUser(t *testing.T) {
+	user := new(User)
+	err := db.Preload("LikeProducts").Take(user, "id = ?", "1").Error
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(user.LikeProducts))
+}
+
+func TestAssociationFind(t *testing.T) {
+	var product = new(Product)
+	err := db.Take(product, "id = ?", "P001").Error
+	assert.Nil(t, err)
+
+	var users []User
+	err = db.Model(product).Where("first_name LIKE ?", "User%").Association("LikedByUsers").Find(&users)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(users))
+}
+
+func TestAssociationAppend(t *testing.T) {
+	user := new(User)
+	err := db.Take(user, "id = ?", "3").Error
+	assert.Nil(t, err)
+
+	product := new(Product)
+	err = db.Take(product, "id = ?", "P001").Error
+	assert.Nil(t, err)
+
+	err = db.Model(user).Association("LikeProducts").Append(product)
+	assert.Nil(t, err)
+}
+
+func TestAssociationReplace(t *testing.T) {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		user := new(User)
+		err := tx.Take(user, "id = ?", "1").Error
+		assert.Nil(t, err)
+
+		wallet := Wallet{
+			Id:      "01",
+			UserId:  user.Id,
+			Balance: 2000000,
+		}
+
+		err = tx.Model(user).Association("Wallet").Replace(&wallet)
+		return err
+	})
+	assert.Nil(t, err)
+}
+
+func TestAssociationDelete(t *testing.T) {
+	user := new(User)
+	err := db.Take(user, "id = ?", "3").Error
+	assert.Nil(t, err)
+
+	product := new(Product)
+	err = db.Take(product, "id = ?", "P001").Error
+	assert.Nil(t, err)
+
+	err = db.Model(user).Association("LikeProducts").Delete(product)
+	assert.Nil(t, err)
+}
+
+func TestAssociationClear(t *testing.T) {
+	product := new(Product)
+	err := db.Take(product, "id = ?", "P001").Error
+	assert.Nil(t, err)
+
+	err = db.Model(product).Association("LikedByUsers").Clear()
+	assert.Nil(t, err)
+}
