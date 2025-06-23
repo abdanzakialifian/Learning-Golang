@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"testing"
@@ -768,4 +769,13 @@ func TestAggregationGroupByAndHaving(t *testing.T) {
 		"max(balance) as max_balance", "avg(balance) as avg_balance").Joins("User").Group("User.id").Having("sum(balance) > ?", 1000000).Find(&results).Error
 	assert.Nil(t, err)
 	assert.Equal(t, 0, len(results))
+}
+
+func TestContext(t *testing.T) {
+	ctx := context.Background()
+
+	var users []User
+	err := db.WithContext(ctx).Find(&users).Error
+	assert.Nil(t, err)
+	assert.Equal(t, 19, len(users))
 }
