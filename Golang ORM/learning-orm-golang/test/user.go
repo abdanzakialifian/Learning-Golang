@@ -1,6 +1,10 @@
 package test
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
 	Id           string    `gorm:"column:id;primary_key;<-:create"` // "<-:create is field permission"
@@ -22,4 +26,11 @@ type Name struct {
 
 func (user *User) TableName() string {
 	return "user"
+}
+
+func (user *User) BeforeCreate(db *gorm.DB) error {
+	if user.Id == "" {
+		user.Id = "user-" + time.Now().Format("20250106220405")
+	}
+	return nil
 }
